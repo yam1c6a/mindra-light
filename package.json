@@ -1,0 +1,44 @@
+{
+  "name": "mindra-light",
+  "version": "0.8.1",
+  "main": "main.js",
+  "description": "Simple Electron webview browser for Mindra Light",
+  "scripts": {
+    "start": "electron .",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder",
+    "build": "electron-builder"
+  },
+  "devDependencies": {
+    "electron": "^33.0.0",
+    "electron-builder": "^24.6.0"
+  },
+  "dependencies": {
+    "adblock-rs": "^0.11.1"
+  },
+  "build": {
+    "appId": "com.mindra.light",
+    "files": [
+      "**/*",
+      {
+        "from": "node_modules/@xenova/transformers",
+        "to": "transformers",
+        "filter": [
+          "**/*.json",
+          "**/*.bin",
+          "**/*.wasm"
+        ]
+      }
+    ],
+    "icon": "icons/2mindra_icon_512.png",
+    "win": {
+      "icon": "icons/icon.ico"
+    },
+    "mac": {
+      "icon": "icons/mindra.icns"
+    },
+    "linux": {
+      "icon": "icons"
+    }
+  }
+}

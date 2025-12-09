@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="ja" data-theme="cute">
+  <head>
+    <meta charset="UTF-8">
+
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="
+        default-src 'self';
+        script-src 'self';
+        img-src 'self' data: https:;
+        style-src 'self' 'unsafe-inline';
+        connect-src 'self' http: https: ws: wss:;
+        frame-src https:;
+      "
+    >
+    <title>Mindra Light</title>
+
+    <link rel="stylesheet" href="./renderer/css/style.css" />
+    <link rel="stylesheet" href="./renderer/css/cool.css" />
+    <link rel="stylesheet" href="./renderer/css/cute.css">
+    <link rel="stylesheet" href="./renderer/css/simple.css" />
+    <link rel="stylesheet" href="./renderer/css/aurora.css" />
+    <link rel="stylesheet" href="./renderer/css/mint.css" />
+    <link rel="stylesheet" href="./renderer/css/zenith.css" />
+    <link rel="stylesheet" href="./renderer/css/emerald.css" />
+  </head>
+
+  <body>
+    <div id="root">
+      <div id="top-hover-zone"></div>
+
+      <!-- タイトルバー -->
+      <div id="window-titlebar">
+        <div class="window-titlebar-left">
+          <img src="icons/mindra_icon_16.png" alt="Mindra" />
+          <span class="window-title-text">Mindra Light v0.8.1</span>
+        </div>
+        <div>
+          <button id="win-min" class="window-btn">−</button>
+          <button id="win-max" class="window-btn">□</button>
+          <button id="win-close" class="window-btn close">×</button>
+        </div>
+      </div>
+
+      <!-- 左サイドバー -->
+      <div id="sidebar-hover-zone"></div>
+      <div id="sidebar">
+        <div class="sidebar-header">
+          <div class="sidebar-header-left">
+            <button id="btn-open-settings" class="sidebar-icon-btn">
+              <svg viewBox="0 0 24 24" aria-hidden="true" class="icon-gear">
+                <g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="3.2" />
+                  <path d="M4.8 12a7.2 7.2 0 0 1 .12-1.2l-1.78-1.02 1.6-2.77 1.84.5a7.3 7.3 0 0 1 1.02-.88l-.08-1.9 3.2-.8.9 1.7c.4-.02.8-.02 1.2 0l.9-1.7 3.2.8-.08 1.9c.36.26.7.55 1.02.88l1.84-.5 1.6 2.77-1.78 1.02c.06.4.1.8.1 1.2s-.04.8-.1 1.2l1.78 1.02-1.6 2.77-1.84-.5c-.3.32-.66.62-1.02.88l.08 1.9-3.2.8-.9-1.7c-.4.02-.8.02-1.2 0l-.9 1.7-3.2-.8.08-1.9a7.3 7.3 0 0 1-1.02-.88l-1.84.5-1.6-2.77 1.78-1.02A7.3 7.3 0 0 1 4.8 12Z" />
+                </g>
+              </svg>
+            </button>
+            <button id="btn-toggle-bookmark-mode" class="sidebar-icon-btn" title="ブックマーク">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"
+                  d="M8 4h8a1 1 0 0 1 1 1v14l-5-3-5 3V5a1 1 0 0 1 1-1z"/>
+              </svg>
+            </button>
+          </div>
+
+          <div class="sidebar-header-right">
+
+            <!-- サイドバー切替 -->
+            <button id="btn-toggle-sidebar-mode" class="sidebar-icon-btn">
+              <svg viewBox="0 0 24 24" aria-hidden="true" class="icon-sidebar">
+                <g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="3.5" y="4" width="17" height="16" rx="3" />
+                  <line x1="8.5" y1="5" x2="8.5" y2="19" />
+                  <line x1="11.5" y1="8" x2="17.5" y2="8" />
+                  <line x1="11.5" y1="12" x2="17.5" y2="12" />
+                  <line x1="11.5" y1="16" x2="15.5" y2="16" />
+                </g>
+              </svg>
+            </button>
+
+            <!-- タイトルバー切替 -->
+            <button id="btn-toggle-titlebar-mode" class="sidebar-icon-btn">
+              <svg viewBox="0 0 24 24" aria-hidden="true" class="icon-titlebar">
+                <g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="3.5" y="5" width="17" height="14" rx="3" />
+                  <line x1="4" y1="9" x2="20" y2="9" />
+                  <circle cx="7" cy="7" r="0.9" />
+                  <circle cx="10" cy="7" r="0.9" />
+                  <circle cx="13" cy="7" r="0.9" />
+                </g>
+              </svg>
+            </button>
+
+            <!-- AIバー切替 -->
+            <button id="btn-toggle-ai" class="sidebar-icon-btn">AI</button>
+
+          </div>
+        </div>
+
+        <div class="sidebar-section-divider"></div>
+
+        <div id="bookmark-mode-pane" class="bookmark-mode-pane" style="display:none;"></div>
+
+        <div class="sidebar-url-row url-with-star">
+          <input id="sidebar-url-input" type="text" placeholder="URL を入力 / 検索" />
+
+          <button
+            id="btn-sidebar-bookmark"
+            class="urlstar-btn"
+            title="このページをブックマーク"
+          >☆</button>
+
+          <button class="download-status-btn" id="download-status-btn" aria-label="DL">
+            <!-- 固定の丸い枠（常に表示される） -->
+            <svg class="icon-ring-base" viewBox="0 0 24 24">
+              <circle cx="12" cy="12" r="9"
+                stroke="currentColor"
+                stroke-width="2"
+                fill="none"
+                opacity="0.35" />
+            </svg>
+
+            <!-- ローディング中の進捗リング（％で伸びる） -->
+            <svg class="icon-loading" viewBox="0 0 24 24">
+              <circle
+                class="dl-progress-ring"
+                cx="12"
+                cy="12"
+                r="9"
+                stroke="currentColor"
+                stroke-width="2"
+                fill="none"
+                stroke-linecap="round"
+                stroke-dasharray="56"
+                stroke-dashoffset="56"
+              />
+            </svg>
+
+            <!-- 通常の矢印 -->
+            <svg class="icon-normal" viewBox="0 0 24 24">
+              <path d="M12 5v9m0 0-4-4m4 4 4-4M6 19h12"
+                stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round" fill="none" />
+            </svg>
+
+            <!-- 完了時の矢印（濃い色） -->
+            <svg class="icon-complete" viewBox="0 0 24 24">
+              <path d="M12 5v9m0 0-4-4m4 4 4-4M6 19h12"
+                stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round" fill="none" />
+            </svg>
+          </button>
+        </div>
+
+        <button id="btn-new-tab">
+          <span class="plus">＋</span><span>New Tab</span>
+        </button>
+
+        <button id="btn-split-view" class="tab-split-btn">
+          <svg viewBox="0 0 24 24" class="icon-splitview" aria-hidden="true">
+            <g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round">
+              <rect x="4" y="7" width="16" height="10" rx="2"></rect>
+              <line x1="12" y1="7" x2="12" y2="17"></line>
+            </g>
+          </svg>
+          <span>Split View</span>
+        </button>
+
+        <hr class="sidebar-divider" />
+        <div id="tab-list"></div>
+      </div>
+
+      <!-- AIサイドバー -->
+      <div id="right-sidebar">
+        <div id="right-sidebar-main">
+
+          <!-- AIモードヘッダー（セグメント切替） -->
+          <div id="ai-mode-header">
+            <div class="ai-mode-toggle">
+              <button type="button" id="ai-seg-ai" class="ai-mode-seg">AI</button>
+              <button type="button" id="ai-seg-web" class="ai-mode-seg">送信</button>
+              <input type="checkbox" id="ai-web-mode-toggle" hidden />
+            </div>
+            <span id="ai-mode-label" class="ai-mode-label">AIチャット</span>
+          </div>
+
+          <!-- 状態表示ゾーン -->
+          <div id="ai-status-zone">
+            <button id="ai-recheck-btn">再チェック</button>
+            <div id="ai-status-text"></div>
+          </div>
+
+          <!-- チャットゾーン -->
+          <div id="ai-chat-container"></div>
+
+          <!-- 入力欄 + 送信ボタン -->
+          <div id="ai-input-row">
+            <textarea id="ai-input" placeholder="Shift+Enterで改行" disabled></textarea>
+            <button id="ai-send" disabled>送信</button>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- その他のUIは省略（元ファイルと同じ） -->
+      <div id="settings-overlay">
+        <div id="settings-panel">
+          <div id="settings-panel-header">
+            <span id="settings-panel-title">Settings</span>
+            <button id="settings-panel-close">×</button>
+          </div>
+          <div id="settings-panel-body">
+            <div id="settings-root"></div>
+          </div>
+        </div>
+      </div>
+
+      <div id="find-bar">
+        <input id="find-input" type="text" placeholder="このページを検索" />
+        <span id="find-count"></span>
+        <button id="find-close">×</button>
+      </div>
+
+      <div id="profile-overlay"></div>
+      <div id="profile-menu"></div>
+
+      <div id="split-overlay">
+        <div id="split-overlay-indicator"></div>
+      </div>
+    </div>
+
+    <!-- JSローディング順 -->
+    <script src="./renderer/splitview.js"></script>
+    <script src="./renderer/theme.js"></script>
+
+    <script src="./renderer/settings-store.js"></script>
+    <script src="./renderer/settings.js"></script>
+
+    <script src="./renderer/app.js"></script>
+
+    <script src="./renderer/ai/universal-search.js"></script>
+    <script src="./renderer/ai/summarizer.js"></script>
+    <script src="./renderer/ai/translator.js"></script>
+    <script src="./renderer/ai/x-commands.js"></script>
+    <script src="./renderer/ai/dispatch.js"></script>
+    <script src="./renderer/ai/natural-command.js"></script>
+    <script src="./renderer/ai/sidebar.js"></script>
+  </body>
+</html>

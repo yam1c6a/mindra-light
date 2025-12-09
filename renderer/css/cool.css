@@ -1,0 +1,550 @@
+/* =========================================
+   Mindra Light - Cool-Aqua Theme (dark neon)
+   ========================================= */
+
+
+/* =========================================
+ * テーマ変数
+ * =======================================*/
+html[data-theme="cool"] {
+  --bg: linear-gradient(
+    180deg,
+    #02040b 0%,
+    #030810 40%,
+    #030810 100%
+  );
+
+  --side-bg: linear-gradient(
+    180deg,
+    #03050c 0%,
+    #060914 45%,
+    #050812 100%
+  );
+
+  --ai-bg: #101220;
+
+  --tab-bg: #12131c;
+  --tab-active-bg: #102230;
+
+  --tab-fg: #d7d8e0;
+  --border-color: rgba(0, 255, 255, 0.1);
+  --accent: #00FFFF;
+}
+
+
+/* =========================================
+ * 全体背景
+ * =======================================*/
+html[data-theme="cool"] body,
+html[data-theme="cool"] #root {
+  background: var(--bg);
+}
+
+/* =========================================
+ * タイトルバー
+ * =======================================*/
+html[data-theme="cool"] #window-titlebar {
+  background: #151622;
+  border-bottom-color: var(--border-color);
+}
+
+html[data-theme="cool"] .window-title-text {
+  color: #e2e4f2;
+}
+
+html[data-theme="cool"] .window-btn {
+  color: #dcdfea;
+}
+
+html[data-theme="cool"] .window-btn:hover {
+  background: rgba(0, 255, 255, 0.06);
+}
+
+html[data-theme="cool"] .window-btn.close:hover {
+  background: #ff5c5c;
+  color: #ffffff;
+}
+
+
+/* =========================================
+ * 左サイドバー
+ * =======================================*/
+html[data-theme="cool"] #sidebar {
+  background: var(--side-bg);
+  border-right-color: var(--border-color);
+  color: #d7d8e0;
+}
+
+html[data-theme="cool"] #sidebar .sidebar-section-divider {
+  background: rgba(0, 255, 255, 0.08);
+}
+
+html[data-theme="cool"] #sidebar .sidebar-title {
+  color: #e3e4f4;
+}
+
+
+/* =========================================
+ * 左上 4 ボタン
+ * =======================================*/
+
+/* OFF 共通 */
+html[data-theme="cool"] .sidebar-icon-btn {
+  background: linear-gradient(
+    135deg,
+    #05090b 0%,
+    #080f14 100%
+  ) !important;
+  border-radius: 6px;
+  border: 1px solid rgba(0, 255, 255, 0.45) !important;
+  box-shadow: 0 0 6px rgba(0, 255, 255, 0.20);
+  color: #00FFFF;
+}
+
+/* OFF ホバー */
+html[data-theme="cool"] .sidebar-icon-btn:hover:not(.active) {
+  background: linear-gradient(
+    135deg,
+    #071113 0%,
+    #0b171a 100%
+  ) !important;
+}
+
+/* ON（active） */
+html[data-theme="cool"] .sidebar-icon-btn.active {
+  background: linear-gradient(
+    135deg,
+    #00FFFF 0%,
+    #058080 20%,
+    #080f14 100%
+  ) !important;
+  border-color: rgba(67, 255, 255, 0.9) !important;
+  color: #00FFFF !important;
+  box-shadow:
+    0 0 0 1px rgba(0, 0, 0, 0.7),
+    0 0 8px rgba(40, 200, 255, 0.55);
+}
+
+
+/* =========================================
+ * URL入力欄
+ * =======================================*/
+html[data-theme="cool"] #sidebar-url-input {
+  background: #05060a !important;
+  border: 1px solid #00BFFF !important;
+  color: #e7e9f2 !important;
+}
+
+html[data-theme="cool"] #sidebar-url-input::placeholder {
+  color: #868aa0;
+}
+
+html[data-theme="cool"] #sidebar-url-input:focus {
+  border-color: #00FFFF;
+  box-shadow: 0 0 0 2px rgba(0, 255, 255, 0.4);
+  outline: none;
+}
+
+html[data-theme="cool"] .urlstar-btn {
+  color: #6cdcff;
+}
+html[data-theme="cool"] .urlstar-btn.is-bookmarked {
+  color: #00ffff;
+}
+
+html[data-theme="cool"] .download-status-btn svg {
+  color: #00ffff !important;
+}
+
+/* =========================================
+ * New Tab ボタン
+ * =======================================*/
+html[data-theme="cool"] #btn-new-tab {
+  color: #d3d4dd;
+  background: rgba(0, 255, 255, 0.09);
+  border-radius: 6px;
+}
+
+html[data-theme="cool"] #btn-new-tab:hover {
+  background: rgba(0, 255, 255, 0.16);
+}
+
+
+/* =========================================
+ * Split View ボタン
+ * =======================================*/
+html[data-theme="cool"] #btn-split-view {
+  width: 100%;
+  height: 30px;
+  justify-content: flex-start;
+  padding: 4px 8px;
+  border-radius: 6px;
+
+  background: linear-gradient(
+    135deg,
+    #050b0c 0%,
+    #070f11 100%
+  );
+  border: 1px solid rgba(130, 190, 255, 0.2);
+  color: #cfd8d2;
+  opacity: 0.9;
+  transition: 0.15s ease;
+}
+
+html[data-theme="cool"] #btn-split-view:hover {
+  opacity: 1;
+  background: linear-gradient(
+    135deg,
+    #071113 0%,
+    #0a1719 100%
+  );
+}
+
+/* Split 中（アクティブ） */
+html[data-theme="cool"] #btn-split-view.active {
+  background: linear-gradient(
+    135deg,
+    #102230 0%,
+    #183040 45%,
+    #102230 100%
+  );
+  color: #f5f7ff;
+  border: 1px solid rgba(140, 180, 255, 0.55);
+  box-shadow:
+    0 0 0 1px rgba(10, 12, 26, 0.9),
+    0 0 6px rgba(50, 120, 255, 0.35);
+}
+
+
+/* =========================================
+ * タブ一覧
+ * =======================================*/
+html[data-theme="cool"] .tab-item {
+  color: var(--tab-fg);
+}
+
+html[data-theme="cool"] .tab-item:hover {
+  background: rgba(0, 255, 255, 0.03);
+}
+
+/* アクティブタブ */
+html[data-theme="cool"] .tab-item.active {
+  background: linear-gradient(
+    135deg,
+    #102230 0%,
+    #183040 45%,
+    #102230 100%
+  );
+  color: #f5f7ff;
+  border: 1px solid rgba(0, 255, 255, 0.55);
+  box-shadow:
+    0 0 0 1px rgba(10, 12, 26, 0.9),
+    0 0 6px rgba(0, 200, 255, 0.35);
+}
+
+html[data-theme="cool"] .tab-profile-dot {
+  background: #18ff8b;
+  border-color: rgba(0, 0, 0, 0.6);
+}
+
+html[data-theme="cool"] .tab-close-btn {
+  color: #8a8fb0;
+}
+
+html[data-theme="cool"] .tab-close-btn:hover {
+  color: #ff8a9a;
+}
+
+
+/* =========================================
+ * 右サイドバー（AIエリアの背景）
+ * =======================================*/
+html[data-theme="cool"] #right-sidebar {
+  background: linear-gradient(
+    135deg,
+    #0f1730 0%, 
+    #152040 26%,
+    #050810 100%
+  );
+  color: #f3e5ff;
+  border-left-color: rgba(0, 255, 255, 0.08);
+}
+
+
+/* =========================================
+ * AI入力エリア & 再チェックボタン
+ * （右サイドバー下部）
+ * =======================================*/
+html[data-theme="cool"] #ai-input {
+  background: rgba(7, 8, 20, 0.9);
+  border-color: rgba(0, 255, 255, 0.14);
+  color: #f3f4ff;
+}
+
+html[data-theme="cool"] #ai-input::placeholder {
+  color: rgba(230, 230, 255, 0.6);
+}
+
+html[data-theme="cool"] #ai-send {
+  background: linear-gradient(135deg, #4fd1ff, #00BFFF);
+  color: #ffffff;
+  border: none;
+  box-shadow: 0 0 8px rgba(0, 209, 255, 0.7);
+}
+
+/* AI再チェックボタン */
+[data-theme="cool"] #ai-recheck-btn {
+  position: relative;
+  padding: 10px 28px;
+  border-radius: 999px;
+  border: none;
+  font-size: 13px;
+  cursor: pointer;
+  text-align: center;
+
+  background: linear-gradient(145deg, #00BFFF, #00FFFF);
+  color: #ffffff;
+
+  box-shadow:
+    0 10px 20px rgba(0, 0, 0, 0.45),
+    0 0 0 1px rgba(255, 255, 255, 0.14),
+    inset 0 1px 0 rgba(255, 255, 255, 0.45);
+}
+
+/* 上側のハイライト（ツヤ） */
+[data-theme="cool"] #ai-recheck-btn::before {
+  content: "";
+  position: absolute;
+  left: 4px;
+  right: 4px;
+  top: 3px;
+  height: 50%;
+  border-radius: 999px;
+  background: linear-gradient(
+    rgba(255, 255, 255, 0.55),
+    transparent
+  );
+  pointer-events: none;
+}
+
+/* ホバー：ふわっと浮く */
+[data-theme="cool"] #ai-recheck-btn:hover {
+  background: linear-gradient(145deg, #00DFFF, #00FFFF);
+  transform: translateY(-2px);
+  box-shadow:
+    0 14px 26px rgba(0, 0, 0, 0.55),
+    0 0 0 1px rgba(255, 255, 255, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6);
+}
+
+/* 押されたとき：少し沈む */
+[data-theme="cool"] #ai-recheck-btn:active {
+  transform: translateY(1px);
+  box-shadow:
+    0 6px 12px rgba(0, 0, 0, 0.4),
+    inset 0 2px 4px rgba(0, 0, 0, 0.45);
+}
+
+
+/* =========================================
+ * AIチャットバブル（中央の吹き出し）
+ * =======================================*/
+
+/* Assistant */
+html[data-theme="cool"] .ai-chat-bubble.assistant {
+  background: linear-gradient(
+    135deg,
+    #102230 0%,
+    #183040 45%,
+    #102230 100%
+  );
+  color: #e5e7ff;
+  border: 1px solid rgba(0, 255, 255, 0.35);
+  box-shadow: 0 4px 14px rgba(0, 0, 40, 0.55);
+  backdrop-filter: blur(4px);
+}
+
+/* User */
+html[data-theme="cool"] .ai-chat-bubble.user {
+  background: linear-gradient(
+    135deg,
+    #00FFFF 0%,
+    #058080 45%,
+    #080f14 100%
+  );
+  color: #ffffff;
+  border: 1px solid rgba(255, 160, 255, 0.5);
+  box-shadow:
+    0 4px 14px rgba(60, 0, 90, 0.55),
+    inset 0 1px 1px rgba(255, 255, 255, 0.35);
+}
+
+
+/* =========================================
+ * ページ内検索バー
+ * =======================================*/
+html[data-theme="cool"] #find-bar {
+  background: rgba(22, 23, 34, 0.96);
+}
+
+html[data-theme="cool"] #find-input {
+  background: #10111a;
+  border-color: rgba(0, 255, 255, 0.12);
+  color: #d7d8e0;
+}
+
+html[data-theme="cool"] #find-close:hover {
+  background: rgba(0, 255, 255, 0.06);
+}
+
+
+/* =========================================
+ * コンテキストメニュー
+ * =======================================*/
+[data-theme="cool"] .content-menu {
+  background: #151623;
+  color: #e7e9ff;
+  border-color: rgba(0, 0, 0, 0.6);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+}
+
+[data-theme="cool"] .content-menu-item {
+  padding: 6px 12px;
+}
+
+[data-theme="cool"] .content-menu-item:hover {
+  background: rgba(0, 255, 255, 0.24);
+}
+
+
+/* =========================================
+ * 設定オーバーレイ & パネル
+ * =======================================*/
+html[data-theme="cool"] #settings-overlay {
+  background: rgba(0, 0, 0, 0.55);
+}
+
+html[data-theme="cool"] #settings-panel {
+  background: linear-gradient(180deg, rgba(10,12,20,0.75), rgba(6,8,14,0.85));
+  border: 1px solid rgba(0, 255, 255, 0.20);
+  color: #d7d8e0;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.6);
+}
+
+
+/* --- 設定：共通ボタン --- */
+html[data-theme="cool"] .settings-button {
+  background: linear-gradient(135deg, #1c2a45, #2d3e62);
+  color: #e8edff;
+  border: 1px solid rgba(0, 255, 255, 0.45);
+  border-radius: 6px;
+  padding: 8px 14px;
+  cursor: pointer;
+  transition: 0.15s ease;
+}
+
+html[data-theme="cool"] .settings-button:hover {
+  background: linear-gradient(135deg, #243357, #344a74);
+  box-shadow: 0 0 8px rgba(0, 255, 255, 0.6);
+}
+
+html[data-theme="cool"] .settings-button:active {
+  transform: translateY(1px);
+}
+
+html[data-theme="cool"] #settings-panel-close {
+  color: #dfe4ff;
+}
+
+/* --- 設定：セレクトボックス --- */
+html[data-theme="cool"] .settings-select,
+html[data-theme="cool"] select {
+  background: #0a0e18;
+  color: #d6d9f4;
+  border: 1px solid rgba(0, 255, 255, 0.35);
+  border-radius: 6px;
+  padding: 6px 10px;
+}
+
+
+/* --- 設定：インライン入力 --- */
+html[data-theme="cool"] .settings-inline input {
+  background: #090c14;
+  color: #d4d8f4;
+  border: 1px solid rgba(0, 255, 255, 0.3);
+  border-radius: 6px;
+  padding: 6px 8px;
+}
+
+html[data-theme="cool"] .settings-inline button {
+  margin-left: 6px;
+}
+
+
+/* =========================================
+ * AIモード セグメントトグル
+ * （右サイドバー上部ヘッダー）
+ * =======================================*/
+html[data-theme="cool"] #ai-mode-header {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+  padding: 4px 6px 0;
+}
+
+html[data-theme="cool"] .ai-mode-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  padding: 2px;
+  border-radius: 999px;
+  background: #080a14;
+  border: 1px solid rgba(0, 255, 255, 0.4);
+  box-shadow: 0 0 10px rgba(0, 255, 255, 0.35);
+}
+
+html[data-theme="cool"] #ai-web-mode-toggle {
+  display: none;
+}
+
+html[data-theme="cool"] .ai-mode-seg {
+  border-radius: 999px;
+  border: 1px solid rgba(40, 60, 120, 0.8);
+  padding: 2px 10px;
+  min-width: 40px;
+  height: 22px;
+  font-size: 11px;
+  line-height: 1;
+  cursor: pointer;
+  background: linear-gradient(135deg, #05070d 0%, #090c16 100%);
+  color: #d7d8e0;
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.7);
+  transition: 0.15s ease;
+}
+
+html[data-theme="cool"] .ai-mode-seg:hover {
+  background: linear-gradient(135deg, #0b1020 0%, #11192c 100%);
+}
+
+html[data-theme="cool"] .ai-mode-seg.active {
+  background: linear-gradient(
+    135deg,
+    #102230 0%,
+    #183040 45%,
+    #102230 100%
+  );
+  color: #f5f7ff;
+  border-color: rgba(0, 255, 255, 0.8);
+  box-shadow:
+    0 0 0 1px rgba(10, 12, 26, 0.9),
+    0 0 8px rgba(0, 150, 255, 0.7);
+}
+
+html[data-theme="cool"] .ai-mode-label {
+  font-size: 10px;
+  color: #cfd2ff;
+  opacity: 0.85;
+  padding-right: 6px;
+}
