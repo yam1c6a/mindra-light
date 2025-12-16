@@ -573,7 +573,7 @@ async function loadWindowState(profileId) {
   }
 }
 
-async function saveWindowState(win, profileId) {
+function saveWindowState(win, profileId) {
   if (!win) return;
   const pid = profileId || "profile-1";
 
@@ -590,7 +590,7 @@ async function saveWindowState(win, profileId) {
 
   let all = {};
   try {
-    const raw = await fs.readFile(windowStatePath, "utf8");
+    const raw = fsSync.readFileSync(windowStatePath, "utf8");
     all = JSON.parse(raw) || {};
   } catch (e) {
     all = {};
@@ -599,7 +599,8 @@ async function saveWindowState(win, profileId) {
   all[pid] = nextState;
 
   try {
-    await fs.writeFile(windowStatePath, JSON.stringify(all, null, 2), "utf8");
+    fsSync.mkdirSync(path.dirname(windowStatePath), { recursive: true });
+    fsSync.writeFileSync(windowStatePath, JSON.stringify(all, null, 2), "utf8");
   } catch (e) {
     console.error("[window-state] save error:", e);
   }
