@@ -36,14 +36,19 @@
     },
   };
 
-  // 実際に <html data-theme="..."> を書き換える
+  /**
+   * <html data-theme="..."> 属性を更新してテーマを適用する。
+   * @param {string} themeId 設定するテーマ ID。
+   */
   function applyTheme(themeId) {
     const docEl = document.documentElement;
     if (!docEl) return;
     docEl.setAttribute("data-theme", themeId);
   }
 
-  // 起動時に一度だけ呼ばれる
+  /**
+   * 起動時に保存済みテーマを読み込み、初期テーマを適用する。
+   */
   function initTheme() {
     let id = DEFAULT_THEME_ID;
     try {
@@ -57,7 +62,10 @@
     applyTheme(id);
   }
 
-  // テーマ変更（＋保存）
+  /**
+   * テーマを変更し、localStorage に保存する。
+   * @param {string} themeId 設定するテーマ ID。
+   */
   function setTheme(themeId) {
     if (!THEMES[themeId]) return;
     applyTheme(themeId);
@@ -68,7 +76,10 @@
     }
   }
 
-  // 現在のテーマ情報を返す
+  /**
+   * 現在適用中のテーマ情報を返す。
+   * @returns {{id: string, label: string}} テーマ情報。
+   */
   function getTheme() {
     const id =
       document.documentElement.getAttribute("data-theme") ||
@@ -77,7 +88,10 @@
     return THEMES[id] || THEMES[DEFAULT_THEME_ID];
   }
 
-  // テーマの一覧（設定 UI 作るとき用）
+  /**
+   * 利用可能なテーマ一覧を取得する。
+   * @returns {Array<{id: string, label: string}>}
+   */
   function listThemes() {
     return Object.values(THEMES);
   }

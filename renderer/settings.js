@@ -4,6 +4,11 @@
   let settings = null;
   let onSettingsChangedGlobal = null;
 
+  /**
+   * 設定画面の UI を初期化する。
+   * @param {HTMLElement} rootEl 描画先のルート要素。
+   * @param {{onSettingsChanged?: (settings: any) => void}} [options] オプションコールバック。
+   */
   function initSettingsUI(rootEl, options) {
     options = options || {};
     const store = window.MindraSettingsStore;
@@ -142,7 +147,9 @@
     applySettingsToUI(rootEl);
   }
 
-  // 2カラムレイアウト用スタイル
+  /**
+   * 2 カラムレイアウト用のスタイルを 1 度だけ注入する。
+   */
   function injectLayoutStylesOnce() {
     const id = "mindra-settings-layout-style";
     if (document.getElementById(id)) return;
@@ -178,7 +185,10 @@
     document.head.appendChild(style);
   }
 
-  // タブ切り替え（今の HTML には .settings-tab が無いので実質何もしない）
+  /**
+   * タブボタンとパネルを紐付ける（タブ要素が無い場合は何もしない）。
+   * @param {HTMLElement} rootEl 設定パネルのルート要素。
+   */
   function wireTabs(rootEl) {
     const tabButtons = rootEl.querySelectorAll(".settings-tab");
     const panels = rootEl.querySelectorAll(".settings-panel");
@@ -200,7 +210,10 @@
     });
   }
 
-  // 一般タブ（テーマ + 広告ブロック + ポップアップ + ログ + プロファイル）
+  /**
+   * 一般タブのイベントと UI バインドを設定する。
+   * @param {HTMLElement} rootEl 設定パネルのルート要素。
+   */
   function bindGeneralTab(rootEl) {
     const themeSel = rootEl.querySelector("#setting-theme");
     const adblockChk = rootEl.querySelector("#setting-enable-adblock");
@@ -326,7 +339,9 @@
       });
     }
 
-    // プロファイル一覧の読み込み
+    /**
+     * プロファイル一覧を読み込み、セレクトボックスへ反映する。
+     */
     async function reloadProfileList() {
       if (!profileListSel) return;
 
@@ -418,7 +433,10 @@
     reloadProfileList();
   }
 
-  // LLMタブ（モデル履歴 + 新規追加）
+  /**
+   * LLM タブのモデル選択や追加ボタンを初期化する。
+   * @param {HTMLElement} rootEl 設定パネルのルート要素。
+   */
   function bindLlmTab(rootEl) {
     const modelSelect = rootEl.querySelector("#setting-llm-model-select");
     const newModelInput = rootEl.querySelector("#setting-llm-new-model");
@@ -474,7 +492,11 @@
     }
   }
 
-  // モデルを設定 & 履歴に反映（履歴から選んだとき用）
+  /**
+   * 選択したモデルを設定し、履歴へ追加する。
+   * @param {HTMLElement} rootEl 設定パネルのルート要素。
+   * @param {string} modelName 設定するモデル名。
+   */
   function applyNewModel(rootEl, modelName) {
     if (!settings.llm) settings.llm = {};
     if (!Array.isArray(settings.llm.modelHistory)) {
@@ -501,7 +523,10 @@
     if (select) select.value = modelName;
   }
 
-  // モデル履歴からセレクトの中身を作り直す
+  /**
+   * モデル履歴からセレクト要素のオプションを再構築する。
+   * @param {HTMLElement} rootEl 設定パネルのルート要素。
+   */
   function refreshModelOptions(rootEl) {
     if (!settings || !settings.llm) return;
 
@@ -537,7 +562,10 @@
     }
   }
 
-  // 設定値を UI に反映
+  /**
+   * 設定値を UI やバックエンドへ反映する。
+   * @param {HTMLElement} rootEl 設定パネルのルート要素。
+   */
   function applySettingsToUI(rootEl) {
     if (!settings) return;
 
@@ -576,7 +604,9 @@
     if (popupChk) popupChk.checked = !!(settings.general && settings.general.enablePopups);
   }
 
-  // 設定保存 + コールバック
+  /**
+   * 設定を保存し、変更コールバックを通知する。
+   */
   function notifySettingsChanged() {
     if (!settings) return;
     const store = window.MindraSettingsStore;

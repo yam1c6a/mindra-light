@@ -1,6 +1,11 @@
 // natural-command → summarize / web / local-AI / Xコマンド へ振り分ける DM 層
 
 (function () {
+  /**
+   * 自然文コマンドを解析し、適切な機能へ振り分ける。
+   * @param {string} text ユーザー入力テキスト。
+   * @returns {Promise<string>} 処理結果メッセージ。
+   */
   async function handle(text) {
     const rawText = (text || "").toString();
 

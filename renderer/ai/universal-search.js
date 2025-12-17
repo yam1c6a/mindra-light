@@ -8,9 +8,11 @@
 //      * input: "mindra-ng"     → 汎用でNG（専用ルートあり）
 // ==========================================================
 
-// ----------------------------------------------------------
-// Pseudo-selector 判定（JS 側）
-// ----------------------------------------------------------
+/**
+ * Pseudo-selector 判定（JS 側）。
+ * @param {string} sel セレクター文字列。
+ * @returns {boolean} Mindra 用の擬似セレクターかどうか。
+ */
 function isMindraPseudoSelector(sel) {
   return sel === "mindra-dummy" || sel === "mindra-ok" || sel === "mindra-ng";
 }
@@ -281,9 +283,11 @@ window.UNIVERSAL_SEARCH = {
 };
 
 
-// ----------------------------------------------------------
-// webview URL取得
-// ----------------------------------------------------------
+/**
+ * webview の URL を取得する。
+ * @param {HTMLWebViewElement} wv 対象 webview。
+ * @returns {string} 取得した URL 文字列。
+ */
 function getWebviewUrl(wv) {
   try {
     if (typeof wv.getURL === "function") return wv.getURL();
@@ -295,9 +299,11 @@ function getWebviewUrl(wv) {
 }
 
 
-// ----------------------------------------------------------
-// URL → WEB_ACTION_RULES
-// ----------------------------------------------------------
+/**
+ * webview の URL から適用する WEB_ACTION_RULES を取得する。
+ * @param {HTMLWebViewElement} wv 対象 webview。
+ * @returns {object|null} マッチしたルール、見つからない場合は null。
+ */
 function getRuleForWebview(wv) {
   const url = getWebviewUrl(wv) || "";
   for (const rule of WEB_ACTION_RULES) {
@@ -315,7 +321,11 @@ function getRuleForWebview(wv) {
 // 対象webview一覧（表示中のものだけに絞る）
 // ----------------------------------------------------------
 
-// webview が画面上で「見えている」か判定
+/**
+ * webview が画面上で「見えている」か判定する。
+ * @param {HTMLWebViewElement} wv 対象 webview。
+ * @returns {boolean} 表示されている場合は true。
+ */
 function isVisibleWebview(wv) {
   try {
     const style = window.getComputedStyle(wv);
@@ -370,10 +380,12 @@ function getTargets() {
 }
 
 
-// ----------------------------------------------------------
-// 注入スクリプト（search/chat 完全統一版）
-//  - 「候補セレクタのリスト」を 1 本だけ持つ
-// ----------------------------------------------------------
+/**
+ * 注入スクリプト（search/chat 完全統一版）を生成する。
+ * @param {string} query 入力するクエリ文字列。
+ * @param {object|null} rule WEB_ACTION_RULES のマッチ結果。
+ * @returns {string} 実行するスクリプト文字列。
+ */
 function buildInjectionScript(query, rule) {
   const q = JSON.stringify(query);
   const cfg = JSON.stringify(

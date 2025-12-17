@@ -1,6 +1,11 @@
 // Mindra Light - ページ翻訳機能
 // Webview の内容を取得 → 翻訳プロンプトを組み立ててローカルAIへ送信 → 結果を返す
 
+/**
+ * 表示中 WebView のテキストを取得して指定言語へ翻訳する。
+ * @param {string} targetLang 翻訳後のターゲット言語（ja/en を想定）。
+ * @returns {Promise<{ok: boolean, translation?: string, error?: string}>}
+ */
 async function translateActivePage(targetLang) {
   try {
     const wv = document.querySelector("webview[style*='visibility: visible']");

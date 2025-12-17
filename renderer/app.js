@@ -187,7 +187,11 @@ function createEmptyBookmarkTree() {
   };
 }
 
-// Node の形を整える（folder / item 判定）
+/**
+ * Node の形を整える（folder / item 判定）。
+ * @param {any} node ブックマークノード候補。
+ * @returns {object|null} 正規化された folder/item ノード、または無効時は null。
+ */
 function normalizeBookmarkNode(node) {
   if (!node || typeof node !== "object") return null;
 
@@ -220,7 +224,11 @@ function normalizeBookmarkNode(node) {
   };
 }
 
-// ツリーから「全アイテム」のフラット配列を作る（バー描画用）
+/**
+ * ツリーから「全アイテム」のフラット配列を作る（バー描画用）。
+ * @param {object} root ルートフォルダノード。
+ * @returns {Array<{url: string, title: string}>} フラット化したブックマーク配列。
+ */
 function flattenBookmarksFromTree(root) {
   const result = [];
   function walk(node) {
@@ -245,7 +253,11 @@ function rebuildFlatBookmarksFromTree() {
   bookmarks = flattenBookmarksFromTree(bookmarkTree);
 }
 
-// 旧形式（配列）→ ツリー形式 への変換
+/**
+ * 旧形式（配列）→ ツリー形式への変換。
+ * @param {Array<{url: string, title?: string}>} flatArray URL の配列形式。
+ * @returns {object} ルートを先頭としたブックマークツリー。
+ */
 function migrateFlatArrayToTree(flatArray) {
   const root = createEmptyBookmarkTree();
   flatArray
@@ -264,7 +276,10 @@ function migrateFlatArrayToTree(flatArray) {
   return root;
 }
 
-// localStorage から読み込み
+/**
+ * localStorage からブックマークツリーを読み込み、互換形式を正規化する。
+ * @returns {void}
+ */
 function loadBookmarks() {
   try {
     const raw = localStorage.getItem(BOOKMARKS_STORAGE_KEY);
@@ -296,7 +311,12 @@ function loadBookmarks() {
 }
 
 // ===== ルート直下ブックマークの並び替えヘルパ =====
-// draggingBookmarkId で指しているノードを、baseId の前/後ろに動かす
+/**
+ * draggingBookmarkId で指しているノードを、baseId の前/後ろに動かす。
+ * @param {string} fromId 移動元ノード ID。
+ * @param {string} baseId 基準となるノード ID。
+ * @param {boolean} before true のとき baseId の前へ、false のとき後ろへ移動。
+ */
 function moveRootBookmarkRelative(fromId, baseId, before) {
   if (!bookmarkTree || !Array.isArray(bookmarkTree.children)) return;
 
@@ -332,7 +352,11 @@ function moveRootBookmarkRelative(fromId, baseId, before) {
 }
 
 // サイドバーの「一番上より上 / 一番下より下」にドロップされたとき用
-// insertIndex は 0〜children.length の想定（children.length のときは末尾に）
+/**
+ * ブックマークノードをルート直下の指定位置へ移動する。
+ * @param {string} fromId 移動対象ノードの ID。
+ * @param {number} insertIndex 挿入先インデックス（0〜children.length）。
+ */
 function moveRootBookmarkToIndex(fromId, insertIndex) {
   if (!bookmarkTree || !Array.isArray(bookmarkTree.children)) return;
 
@@ -375,7 +399,12 @@ function saveBookmarks() {
   }
 }
 
-// URL に対応するアイテムをツリーから探す
+/**
+ * URL に対応するアイテムをツリーから探す。
+ * @param {object} node 検索開始ノード。
+ * @param {string} url 照合する URL。
+ * @returns {object|null} 見つかったアイテムノード、または null。
+ */
 function findBookmarkItemByUrl(node, url) {
   if (!node || !url) return null;
 
@@ -396,7 +425,12 @@ function isUrlBookmarked(url) {
   return !!findBookmarkItemByUrl(bookmarkTree, url);
 }
 
-// ルート直下にブックマークアイテムを追加（フォルダ選択なし）
+/**
+ * ルート直下にブックマークアイテムを追加（フォルダ選択なし）。
+ * 既存の同一 URL は削除してから追加する。
+ * @param {string} url 追加する URL。
+ * @param {string} title 表示タイトル。
+ */
 function addBookmarkToRoot(url, title) {
   if (!bookmarkTree) {
     bookmarkTree = createEmptyBookmarkTree();
@@ -419,7 +453,11 @@ function addBookmarkToRoot(url, title) {
   saveBookmarks();
 }
 
-// URL に一致するアイテムを1件削除
+/**
+ * URL に一致するアイテムを 1 件削除する。
+ * @param {string} url 削除対象の URL。
+ * @returns {boolean} 削除が発生した場合は true。
+ */
 function removeBookmarkByUrl(url) {
   if (!bookmarkTree || !url) return false;
 
@@ -454,7 +492,11 @@ function removeBookmarkByUrl(url) {
 
 // ===== ブックマークノード共通ユーティリティ =====
 
-// ===== ブックマーク用簡易入力ダイアログ（prompt の代わり） =====
+/**
+ * ブックマーク用簡易入力ダイアログ（prompt の代わり）。
+ * @param {{title?: string, fields?: Array<{name: string, label?: string, placeholder?: string, defaultValue?: string}>}} options 表示オプション。
+ * @returns {Promise<object|null>} 入力結果オブジェクト、キャンセル時は null。
+ */
 function openBookmarkDialog(options) {
   return new Promise((resolve) => {
     const { title, fields } = options || {};
@@ -555,7 +597,12 @@ function openBookmarkDialog(options) {
   });
 }
 
-// id でノードを探す
+/**
+ * id でノードを探す。
+ * @param {object} node 検索開始ノード。
+ * @param {string} id 探すノードの ID。
+ * @returns {object|null} 見つかったノード、または null。
+ */
 function findBookmarkNodeById(node, id) {
   if (!node || !id) return null;
   if (node.id === id) return node;
@@ -568,7 +615,13 @@ function findBookmarkNodeById(node, id) {
   return null;
 }
 
-// id でノードとその親を探す
+/**
+ * id でノードとその親を探す。
+ * @param {object} node 検索開始ノード。
+ * @param {string} id 探すノードの ID。
+ * @param {object|null} [parent=null] 現在の親ノード。
+ * @returns {{node: object, parent: object}|null} 見つかったノードと親のペア。
+ */
 function findBookmarkNodeAndParentById(node, id, parent = null) {
   if (!node || !id) return null;
   if (node.id === id) {
@@ -583,7 +636,11 @@ function findBookmarkNodeAndParentById(node, id, parent = null) {
   return null;
 }
 
-// id でノードを削除する
+/**
+ * id でノードを削除する。
+ * @param {string} id 削除するノードの ID。
+ * @returns {boolean} 削除が行われた場合は true。
+ */
 function removeBookmarkNodeById(id) {
   if (!bookmarkTree || !id) return false;
 
@@ -616,7 +673,12 @@ function removeBookmarkNodeById(id) {
   return removed;
 }
 
-// fromId を targetId の前/後に移動（ツリー全体で有効）
+/**
+ * fromId を targetId の前/後に移動（ツリー全体で有効）。
+ * @param {string} fromId 移動元ノード ID。
+ * @param {string} targetId 基準となるノード ID。
+ * @param {boolean} before true のとき targetId の前、false のとき後ろに移動。
+ */
 function moveRootBookmarkRelative(fromId, targetId, before) {
   if (!bookmarkTree || !fromId || !targetId || fromId === targetId) return;
 
@@ -654,7 +716,11 @@ function moveRootBookmarkRelative(fromId, targetId, before) {
   saveBookmarks();
 }
 
-// 任意のノードを「ルート直下」の指定インデックスへ移動（フォルダの外に出す用）
+/**
+ * 任意のノードを「ルート直下」の指定インデックスへ移動（フォルダの外に出す用）。
+ * @param {string} nodeId 移動するノード ID。
+ * @param {number} targetIndex 挿入先インデックス。
+ */
 function moveRootBookmarkToIndex(nodeId, targetIndex) {
   if (!bookmarkTree) return;
   if (!Array.isArray(bookmarkTree.children)) {
@@ -684,7 +750,11 @@ function moveRootBookmarkToIndex(nodeId, targetIndex) {
   saveBookmarks();
 }
 
-// ブックマークをフォルダの中へ移動する
+/**
+ * ブックマークをフォルダの中へ移動する。
+ * @param {string} nodeId 移動するノード ID。
+ * @param {string} folderId 移動先フォルダ ID。
+ */
 function moveBookmarkIntoFolder(nodeId, folderId) {
   if (!bookmarkTree || !nodeId || !folderId || nodeId === folderId) return;
 
@@ -877,7 +947,10 @@ async function editBookmarkNodeById(id) {
 
 // ===== URL欄 ＋ ☆ ボタンの同期 =====
 
-// URL欄の値だけ同期
+/**
+ * URL欄の値だけ同期する。
+ * @returns {void}
+ */
 function syncSidebarUrlInput() {
   const input = document.getElementById("sidebar-url-input");
   if (!input) return;
@@ -892,7 +965,10 @@ function syncSidebarUrlInput() {
   input.value = tab && tab.url ? tab.url : "";
 }
 
-// ☆ボタンの見た目を現在タブのURLに合わせて更新
+/**
+ * ☆ボタンの見た目を現在タブの URL に合わせて更新する。
+ * @returns {void}
+ */
 function syncBookmarkStar() {
   const sidebarBookmarkBtn = document.getElementById("btn-sidebar-bookmark");
   if (!sidebarBookmarkBtn) return;
@@ -916,7 +992,10 @@ function syncBookmarkStar() {
   }
 }
 
-// URL欄＋☆ボタンをまとめて同期
+/**
+ * URL欄と☆ボタンの状態をまとめて同期する。
+ * @returns {void}
+ */
 function syncUrlAndBookmarkUI() {
   syncSidebarUrlInput();
   syncBookmarkStar();
@@ -1026,7 +1105,10 @@ const BOOKMARK_FOLDER_ICON_OPEN = `
   </svg>
 `;
 
-// ブックマークモード時のレイアウト制御
+/**
+ * ブックマークモード時のレイアウトを反映する。
+ * @returns {void}
+ */
 function applyBookmarkModeLayout() {
   const hide = bookmarkModeVisible;
 
@@ -1064,7 +1146,11 @@ function applyBookmarkModeLayout() {
   }
 }
 
-// フォルダ開閉用 SVG アイコン
+/**
+ * フォルダ開閉用 SVG アイコンを生成する。
+ * @param {boolean} isOpen 開いているときは true。
+ * @returns {string} SVG マークアップ文字列。
+ */
 function createFolderToggleIconSvg(isOpen) {
   const svgNS = "http://www.w3.org/2000/svg";
   const svg = document.createElementNS(svgNS, "svg");
@@ -1116,7 +1202,12 @@ function renderBookmarkTreePane() {
   bookmarkModePane.appendChild(list);
 }
 
-// ===== ブックマークツリー描画 =====
+/**
+ * ブックマークツリーを再帰的に描画する。
+ * @param {Array<object>} nodes 表示するノード配列。
+ * @param {number} [depth=0] 現在の深さ。
+ * @returns {DocumentFragment} 描画結果のフラグメント。
+ */
 function buildBookmarkTreeList(nodes, depth = 0) {
   const ul = document.createElement("ul");
   ul.className = depth === 0 ? "bookmark-tree-root" : "bookmark-tree-children";
@@ -1809,7 +1900,11 @@ if (btnToggleTitlebarMode) {
   });
 }
 
-// 見た目は CSS に任せて、ここでは active クラスだけ切り替える
+/**
+ * 見た目は CSS に任せて active クラスだけ切り替える。
+ * @param {HTMLElement|null} btn 対象ボタン要素。
+ * @param {boolean} isOn 有効状態。
+ */
 function setToggleButtonState(btn, isOn) {
   if (!btn) return;
   btn.classList.toggle("active", !!isOn);
@@ -1819,7 +1914,11 @@ function setToggleButtonState(btn, isOn) {
   btn.style.color = "";
 }
 
-// ===== トグル系ボタンの見た目制御（共通） =====
+/**
+ * トグル系ボタンの見た目制御（共通）。
+ * @param {HTMLElement|null} btn 対象ボタン要素。
+ * @param {boolean} on 有効状態。
+ */
 function setToggleButtonVisual(btn, on) {
   if (!btn) return;
 
@@ -1839,7 +1938,10 @@ function updateTitlebarModeButtonStyle() {
   setToggleButtonVisual(btnToggleTitlebarMode, titlebarFixedMode);
 }
 
-// ブックマークモード切り替えボタンの見た目
+/**
+ * ブックマークモード切り替えボタンの見た目を更新する。
+ * @returns {void}
+ */
 function updateBookmarkModeButtonStyle() {
   if (!btnToggleBookmarkMode) return;
   setToggleButtonVisual(btnToggleBookmarkMode, bookmarkModeVisible);
@@ -1869,14 +1971,20 @@ function setRightSidebar(open) {
   updateTitlebarWidth();
 }
 
-// Split View ボタンの見た目
+/**
+ * Split View ボタンの見た目を更新する。
+ * @returns {void}
+ */
 function updateSplitViewButtonStyle() {
   if (!splitViewBtn) return;
   // splitCanvasMode は splitview.js 側と共有してるフラグ
   setToggleButtonVisual(splitViewBtn, splitCanvasMode);
 }
 
-// 設定（テーマ/LLM）が変わったときにアプリ側へ反映
+/**
+ * 設定（テーマ/LLM）が変わったときにアプリ側へ反映する。
+ * @param {object} newSettings 設定モジュールからの更新内容。
+ */
 function applySettingsFromSettingsModule(newSettings) {
   if (!newSettings || !newSettings.general) return;
 
@@ -1884,7 +1992,10 @@ function applySettingsFromSettingsModule(newSettings) {
   document.documentElement.setAttribute("data-theme", theme);
 }
 
-// 設定パネル制御
+/**
+ * 設定パネルの表示を切り替える。
+ * @returns {void}
+ */
 function openSettingsPanel() {
   if (!settingsOverlay) return;
   settingsOverlay.style.display = "flex";
@@ -2035,7 +2146,10 @@ function syncSidebarUrlInput() {
   input.value = tab && tab.url ? tab.url : "";
 }
 
-// ☆ボタンの見た目を現在タブのURLに合わせて更新
+/**
+ * ☆ボタンの見た目を現在タブの URL に合わせて更新する。
+ * @returns {void}
+ */
 function syncBookmarkStar() {
   if (!sidebarBookmarkBtn) return;
 
@@ -2058,13 +2172,19 @@ function syncBookmarkStar() {
   }
 }
 
-// URL欄＋☆ボタンをまとめて同期
+/**
+ * URL欄と☆ボタンの状態をまとめて同期する。
+ * @returns {void}
+ */
 function syncUrlAndBookmarkUI() {
   syncSidebarUrlInput();
   syncBookmarkStar();
 }
 
-// ブックマークバーの描画
+/**
+ * ブックマークバーの描画。
+ * @returns {void}
+ */
 function renderBookmarkBar() {
   const container = document.getElementById("bookmark-bar");
   if (!container) return;
@@ -2302,7 +2422,11 @@ function clearSidebarDragIndicator() {
   sidebarDragOverItem = null;
 }
 
-// 左タブのドラッグ＆ドロップ設定
+/**
+ * 左タブのドラッグ＆ドロップ設定を行う。
+ * @param {HTMLElement} item ドラッグ対象のタブ要素。
+ * @param {object} tab タブのデータオブジェクト。
+ */
 function setupSidebarTabDragHandlers(item, tab) {
   // タブ自体をドラッグ可能に
   item.draggable = true;

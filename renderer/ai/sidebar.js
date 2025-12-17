@@ -57,6 +57,9 @@
   // ===============================================
   // AIモード（AIチャット / Web送信）設定
   // ===============================================
+  /**
+   * AI モードの UI 表示を現在のモードに合わせて更新する。
+   */
   function updateAiModeLabel() {
     if (autoWebMode) {
       aiModeLabel.textContent = "送信モード";
@@ -69,6 +72,9 @@
     }
   }
 
+  /**
+   * 設定ストアから自動 Web モードのフラグを読み込む。
+   */
   function loadAiModeFromSettings() {
     if (!window.MindraSettingsStore) {
       autoWebMode = false;
@@ -84,6 +90,9 @@
     }
   }
 
+  /**
+   * 現在の自動 Web モード設定を保存する。
+   */
   function saveAiModeToSettings() {
     if (!window.MindraSettingsStore) return;
     try {
@@ -130,6 +139,9 @@
   aiInput.style.overflow = "hidden";
   aiInput.rows = 1;
 
+  /**
+   * 入力欄の高さを内容に合わせてリサイズする。
+   */
   function updateInputHeight() {
     aiInput.style.height = "auto";
     const maxHeight = 120;
@@ -159,6 +171,11 @@
   // ===============================================
   // チャットバブル生成（CSSクラス版）
   // ===============================================
+  /**
+   * AI/ユーザーのメッセージ要素を追加する。
+   * @param {"assistant"|"user"} role メッセージの種別。
+   * @param {string} text 表示する本文。
+   */
   function appendMessage(role, text) {
     const row = document.createElement("div");
     row.classList.add("ai-chat-row", role === "user" ? "user" : "assistant");
@@ -183,6 +200,9 @@
     appendMessage(role, text);
   };
 
+  /**
+   * チャットコンテナを最新メッセージまでスクロールする。
+   */
   function scrollToBottom() {
     chatContainer.scrollTop = chatContainer.scrollHeight;
   }
@@ -286,6 +306,9 @@
   // ===============================================
   // レイアウト（ボタン状態・表示切替）
   // ===============================================
+  /**
+   * モードや表示状態に応じて入力欄と履歴のレイアウトを更新する。
+   */
   function applyLayout() {
     // ---------- 送信モード（Webコマンド） ----------
     // LLM状態は一切見せない。ステータスゾーン非表示。
@@ -437,6 +460,10 @@
   }
 
   // 成功したモデルを設定に記録（settings-store を更新）
+  /**
+   * 接続に成功したモデルを履歴に登録し保存する。
+   * @param {string} modelName モデル名。
+   */
   function registerSuccessfulModel(modelName) {
     if (!modelName) return;
     if (!window.MindraSettingsStore) return;

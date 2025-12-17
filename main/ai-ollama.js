@@ -20,6 +20,9 @@ const OLLAMA_MODEL = process.env.MINDRA_AI_MODEL || "qwen2.5:7b-instruct";
 let statusFilePath = null;
 let statusCache = null;
 
+/**
+ * userData 配下にあるステータスファイルのパスを返す。未初期化なら生成する。
+ */
 function ensureStatusFilePath() {
   if (!statusFilePath) {
     const userData = app.getPath("userData");
@@ -28,6 +31,9 @@ function ensureStatusFilePath() {
   return statusFilePath;
 }
 
+/**
+ * Ollama モデルの取得状況をファイルから読み込む。キャッシュを活用して不要な I/O を減らす。
+ */
 async function readStatus() {
   const file = ensureStatusFilePath();
   if (statusCache) return statusCache;
@@ -59,12 +65,22 @@ async function writeStatus(patch) {
   return next;
 }
 
+/**
+ * 現在使用するモデル名を返す。未設定時は既定モデルでフォールバックする。
+ */
 async function getCurrentModelName() {
   const st = await readStatus();
   return st && st.model ? st.model : OLLAMA_MODEL;
 }
 
-// シンプルな HTTP POST(JSON) ヘルパー
+/**
+ * シンプルな HTTP POST(JSON) ヘルパー。
+ *
+ * @param {string} pathname リクエスト先のパス
+ * @param {object} payload ボディに送る JSON データ
+ * @param {number} [timeoutMs=600000] タイムアウト（ミリ秒）
+ * @returns {Promise<object>} レスポンス JSON
+ */
 function postJson(pathname, payload, timeoutMs = 600000) {
   return new Promise((resolve, reject) => {
     try {
@@ -131,7 +147,12 @@ function postJson(pathname, payload, timeoutMs = 600000) {
   });
 }
 
-// エラーをざっくり分類して UI に渡す用
+/**
+ * Ollama からのエラーをざっくり分類して UI に渡す。
+ *
+ * @param {Error} err 捕捉したエラー
+ * @returns {{type: "server-unreachable"|"model-not-found"|"unknown", message: string}} UI 表示用の分類結果
+ */
 function classifyError(err) {
   console.error("[ai-ollama] error:", err);
   const msg = String(err && err.message ? err.message : err || "").toLowerCase();
@@ -257,6 +278,9 @@ async function chatInternal(message, history = []) {
 // ---------------------------------------------
 // IPC 初期化
 // ---------------------------------------------
+/**
+ * renderer との IPC チャンネルを初期化し、モデル取得・チャット・ステータス系の handler を登録する。
+ */
 function initAIBackend(ipcMain) {
   ipcMain.handle("mindra-ai:get-status", async () => {
     try {

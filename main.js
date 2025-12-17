@@ -92,7 +92,12 @@ process.on("unhandledRejection", (reason) => {
   }
 });
 
-// ===== 共通ユーティリティ =====
+/**
+ * HTTP/HTTPS のみを許可して URL をパースするユーティリティ。
+ *
+ * @param {string} raw 入力文字列
+ * @returns {URL|null} 許可された場合は URL オブジェクト、それ以外は null
+ */
 function safeParseHttpUrl(raw) {
   try {
     const u = new URL(raw);
@@ -105,6 +110,13 @@ function safeParseHttpUrl(raw) {
   }
 }
 
+/**
+ * Electron が通知するリクエスト種別を adblock-rs のタイプに変換する。
+ * adblock-rs では独自の種類名を使うため、ここでマッピングして渡す。
+ *
+ * @param {string} electronType Electron のリクエスト種別（webRequest）
+ * @returns {import("adblock-rs").RequestType} adblock-rs で扱える種別
+ */
 function mapRequestTypeForAdblock(electronType) {
   switch (electronType) {
     case "mainFrame":
@@ -130,6 +142,10 @@ function mapRequestTypeForAdblock(electronType) {
 }
 
 // ===== プロファイルメタ管理 =====
+/**
+ * 追加プロファイルの採番状態と一覧を読み出す。
+ * ファイルが欠損しても安全な初期値を返し、壊れたデータで落ちないようにする。
+ */
 function readProfilesMeta() {
   try {
     const raw = fsSync.readFileSync(profilesMetaPath, "utf8");
@@ -159,6 +175,12 @@ function readProfilesMeta() {
   }
 }
 
+/**
+ * プロファイルメタ（lastId/追加プロファイル一覧）をファイルに保存する。
+ * ディレクトリが無い場合は自動で作成し、JSON で書き出す。
+ *
+ * @param {{lastId: number, profiles: Array<{id: string, name?: string}>}} meta 保存するメタ情報
+ */
 function writeProfilesMeta(meta) {
   try {
     fsSync.mkdirSync(path.dirname(profilesMetaPath), { recursive: true });
@@ -174,7 +196,12 @@ function writeProfilesMeta(meta) {
 
 // ===== YouTube 専用ネットワークブロック =====
 
-// YouTube / googlevideo 系かどうか
+/**
+ * YouTube または googlevideo 系ホストかどうかを判定する。
+ *
+ * @param {string} hostname 判定対象のホスト名
+ * @returns {boolean} YouTube 系なら true
+ */
 function isYouTubeHost(hostname) {
   if (!hostname) return false;
   const h = hostname.toLowerCase();
@@ -212,7 +239,13 @@ function isYouTubeAdVideo(url) {
   return adParams.some((p) => u.includes(p));
 }
 
-// YouTube 広告用 URL なら true を返す
+/**
+ * YouTube の広告用 URL かどうかを判定する。
+ *
+ * @param {string} url 判定対象の URL
+ * @param {string} hostname 既知のホスト名
+ * @returns {boolean} 広告 URL なら true
+ */
 function isYouTubeAdUrl(url, hostname) {
   const lowerUrl = url.toLowerCase();
   const h = (hostname || "").toLowerCase();
@@ -239,7 +272,10 @@ function isYouTubeAdUrl(url, hostname) {
   return false;
 }
 
-// HTTPS でテキストをダウンロードして保存する
+/**
+ * HTTPS でテキストをダウンロードし、そのまま指定パスへ保存する。
+ * 親ディレクトリが無ければ作成する。エラーは呼び出し元へ返す。
+ */
 function downloadTextToFile(url, destPath) {
   return new Promise((resolve, reject) => {
     try {
@@ -277,7 +313,10 @@ function downloadTextToFile(url, destPath) {
   });
 }
 
-// 指定ファイルが無い or 古ければダウンロードする
+/**
+ * 指定されたフィルタファイルが存在しない、もしくは更新期限を超えている場合に再ダウンロードする。
+ * 期限内なら何もしない。
+ */
 async function ensureFilterFileFresh(url, localPath, label) {
   try {
     let needDownload = false;
@@ -306,7 +345,10 @@ async function ensureFilterFileFresh(url, localPath, label) {
   }
 }
 
-// EasyList / EasyPrivacy / (必要なら Japan) を自動ダウンロード & 更新
+/**
+ * EasyList / EasyPrivacy / Japan 用フィルタをまとめて最新化する。
+ * 同時実行を避けるため、共有 Promise を使って一度だけ更新する。
+ */
 async function ensureFiltersUpdated() {
   // 公式URL
   const EASYLIST_URL = "https://easylist.to/easylist/easylist.txt";
@@ -334,7 +376,10 @@ async function ensureFiltersUpdated() {
 */
 }
 
-// セッションに adblock-rs を組み込む
+/**
+ * 指定セッションへ adblock-rs を組み込み、リクエストをフィルタリングする。
+ * フィルタが無ければダウンロードし、ロードに失敗した場合は adblock を無効化する。
+ */
 async function initAdblockForSession(session) {
   try {
     if (!filterUpdatePromise) {
@@ -483,7 +528,11 @@ async function initAdblockForSession(session) {
   }
 }
 
-// ===== YouTube DOM 広告を隠す CSS を注入 =====
+/**
+ * YouTube の DOM 広告を非表示にする CSS を返す。
+ *
+ * @returns {string} 挿入用の CSS コード
+ */
 function getYouTubeDomAdblockScript() {
   // ここは YouTube の DOM 変更で壊れる可能性があるので「これは推論寄りだよ」
   return `
@@ -512,6 +561,10 @@ function getYouTubeDomAdblockScript() {
 // =====================================================
 // ウインドウ位置・サイズ（プロファイル別）
 // =====================================================
+/**
+ * プロファイルごとに保存されたウインドウ位置・サイズを読み込む。
+ * ファイルがない場合や破損している場合は既定サイズを返す。
+ */
 async function loadWindowState(profileId) {
   const pid = profileId || "profile-1";
 
@@ -541,6 +594,10 @@ async function loadWindowState(profileId) {
   }
 }
 
+/**
+ * 現在のウインドウ位置・サイズを保存する。プロファイルごとに保持される。
+ * ウインドウが無効な場合は何もしない。
+ */
 function saveWindowState(win, profileId) {
   if (!win) return;
   const pid = profileId || "profile-1";
@@ -574,7 +631,12 @@ function saveWindowState(win, profileId) {
   }
 }
 
-// ===== 起動プロファイルID取得 =====
+/**
+ * 起動引数からプロファイル ID を抽出する。
+ *
+ * @param {string[]} argv Electron に渡された argv 配列
+ * @returns {string|null} 見つかったプロファイル ID
+ */
 function extractProfileIdFromArgv(argv) {
   try {
     const list = Array.isArray(argv) ? argv : process.argv;
@@ -624,7 +686,12 @@ function extractProfileIdFromArgv(argv) {
   return "profile-1";
 }
 
-// ===== config を main 側で読む =====
+/**
+ * renderer で読み込む前の簡易 config を main プロセス側で構築する。
+ *
+ * @param {boolean} isDev 開発モードかどうか
+ * @returns {{isDev: boolean, preload: string}} IPC へ渡す設定
+ */
 function loadConfigInMain(isDev) {
   const filename = isDev ? "config.dev.json" : "config.prod.json";
   const configPath = path.join(__dirname, "config", filename);
@@ -637,7 +704,11 @@ function loadConfigInMain(isDev) {
   }
 }
 
-// ===== ショートカット系 =====
+/**
+ * ショートカット処理の対象となる BrowserWindow を返す。
+ *
+ * @returns {import("electron").BrowserWindow|null} 対象ウインドウ
+ */
 function getTargetWindowForShortcut() {
   const focused = BrowserWindow.getFocusedWindow();
   if (focused && !focused.isDestroyed()) return focused;
@@ -810,7 +881,11 @@ app.on("web-contents-created", (event, contents) => {
 
 // ===== ダウンロードイベント設定 =====
 
-// 1つの session にだけ一度だけフックするヘルパー
+/**
+ * 指定した session にダウンロードイベントを一度だけフックする。
+ *
+ * @param {import("electron").Session} ses 対象となる session
+ */
 function attachDownloadEventsToSession(ses) {
   if (!ses) return;
 
@@ -871,7 +946,9 @@ function attachDownloadEventsToSession(ses) {
   });
 }
 
-// すべての session にフックする
+/**
+ * すべての既存 session にダウンロードイベントをフックする。
+ */
 function setupDownloadEvents() {
   // まず defaultSession
   attachDownloadEventsToSession(session.defaultSession);
