@@ -48,7 +48,10 @@ let splitDragging = false;
 // オーバーレイ制御
 // ======================
 
-// split-overlay の表示 / 非表示
+/**
+ * split-overlay の表示 / 非表示を切り替える。
+ * @param {boolean} active オーバーレイを表示する場合は true。
+ */
 function setSplitOverlayActive(active) {
   if (!window.splitOverlayEl) return;
 
@@ -72,7 +75,10 @@ function setSplitOverlayActive(active) {
   });
 }
 
-// 「コンテンツ領域」（タイトルバー＆サイドバーを除いた部分）を計算
+/**
+ * 「コンテンツ領域」（タイトルバー＆サイドバーを除いた部分）を計算する。
+ * @returns {{rootRect: DOMRectReadOnly, offsetX: number, offsetY: number, width: number, height: number}} 表示領域情報。
+ */
 function computeContentViewport() {
   // ここで毎回 root 要素を取りに行く
   const rootEl = document.getElementById("root");
@@ -133,7 +139,10 @@ function computeContentViewport() {
   };
 }
 
-// 現在の layoutRoot から leaf group の絶対座標リストを計算（SplitView オーバーレイ用）
+/**
+ * 現在の layoutRoot から leaf group の絶対座標リストを計算する（SplitView オーバーレイ用）。
+ * @returns {Array<{x: number, y: number, w: number, h: number, group: object}>} 描画用の矩形リスト。
+ */
 function computeLayoutLeafRectsForSplit() {
   if (!splitCanvasMode || !layoutRoot) return [];
 
@@ -197,7 +206,12 @@ function findLeafRectAtPosition(rects, clientX, clientY) {
   return null;
 }
 
-// 青ゾーン矩形の更新
+/**
+ * 青ゾーン矩形の更新を行い、オーバーレイに反映する。
+ * @param {"left"|"right"|"top"|"bottom"|null} dir 分割方向。
+ * @param {number} clientX クライアント座標 X。
+ * @param {number} clientY クライアント座標 Y。
+ */
 function updateSplitOverlayIndicator(dir, clientX, clientY) {
   if (!window.splitOverlayEl || !window.splitOverlayIndicator) return;
 
@@ -430,7 +444,11 @@ function removeTabFromLayout(tabId) {
   layoutRoot = helper(layoutRoot);
 }
 
-// 純縦レイアウトの leaf 数
+/**
+ * 純縦レイアウトの leaf 数を数える。
+ * @param {object|null} node レイアウトノード。
+ * @returns {number} leaf 数。
+ */
 function countPureVerticalGroups(node) {
   if (!node) return null;
   if (node.type === "group") return 1;
@@ -444,7 +462,11 @@ function countPureVerticalGroups(node) {
   return null;
 }
 
-// 純縦の leaf group を左→右に並べた配列で取得
+/**
+ * 純縦の leaf group を左→右に並べた配列で取得する。
+ * @param {object|null} node レイアウトノード。
+ * @returns {Array<object>} leaf group 配列。
+ */
 function collectVerticalGroups(node) {
   if (!node) return null;
   if (node.type === "group") return [node];
@@ -459,7 +481,11 @@ function collectVerticalGroups(node) {
   return null;
 }
 
-// group 配列から等分の縦 split ツリーを構築
+/**
+ * group 配列から等分の縦 split ツリーを構築する。
+ * @param {Array<object>} groups 縦方向に並べるグループ配列。
+ * @returns {object|null} 新しいレイアウトノード。
+ */
 function buildVerticalSplitFromGroups(groups) {
   if (!groups || groups.length === 0) return null;
   if (groups.length === 1) return groups[0];
@@ -487,7 +513,11 @@ function buildVerticalSplitFromGroups(groups) {
   return helper(groups);
 }
 
-// 純横レイアウトの leaf 数
+/**
+ * 純横レイアウトの leaf 数を数える。
+ * @param {object|null} node レイアウトノード。
+ * @returns {number} leaf 数。
+ */
 function countPureHorizontalGroups(node) {
   if (!node) return null;
   if (node.type === "group") return 1;
@@ -501,7 +531,11 @@ function countPureHorizontalGroups(node) {
   return null;
 }
 
-// 純横レイアウトの leaf group を上→下順に配列で取得
+/**
+ * 純横レイアウトの leaf group を上→下順に配列で取得する。
+ * @param {object|null} node レイアウトノード。
+ * @returns {Array<object>} leaf group 配列。
+ */
 function collectHorizontalGroups(node) {
   if (!node) return null;
   if (node.type === "group") return [node];
@@ -516,7 +550,11 @@ function collectHorizontalGroups(node) {
   return null;
 }
 
-// group 配列から等分の横 split ツリーを構築
+/**
+ * group 配列から等分の横 split ツリーを構築する。
+ * @param {Array<object>} groups 横方向に並べるグループ配列。
+ * @returns {object|null} 新しいレイアウトノード。
+ */
 function buildHorizontalSplitFromGroups(groups) {
   if (!groups || groups.length === 0) return null;
   if (groups.length === 1) return groups[0];
@@ -544,7 +582,14 @@ function buildHorizontalSplitFromGroups(groups) {
   return helper(groups);
 }
 
-// 指定 group を中心にその部分だけ2分割
+/**
+ * 指定 group を中心にその部分だけ 2 分割する。
+ * @param {object} root ルートレイアウトノード。
+ * @param {object} targetNode 対象グループノード。
+ * @param {"horizontal"|"vertical"} dir 分割方向。
+ * @param {object} newGroup 新しく追加するグループ。
+ * @returns {object|null} 分割後のルートノード。
+ */
 function splitLayoutAroundGroup(root, targetNode, dir, newGroup) {
   if (!root || !targetNode) return root;
 
@@ -607,7 +652,13 @@ function splitLayoutAroundGroup(root, targetNode, dir, newGroup) {
   return root;
 }
 
-// タブを SplitView レイアウトに追加
+/**
+ * タブを SplitView レイアウトに追加する。
+ * @param {string} tabId 追加するタブ ID。
+ * @param {"left"|"right"|"top"|"bottom"} direction 追加方向。
+ * @param {number} clientX 追加位置のクライアント座標 X。
+ * @param {number} clientY 追加位置のクライアント座標 Y。
+ */
 function applyLayoutTabAddSplit(tabId, direction, clientX, clientY) {
   const tabExists = tabs.some((t) => t.id === tabId);
   if (!tabExists) return;
@@ -699,7 +750,12 @@ function applyLayoutTabAddSplit(tabId, direction, clientX, clientY) {
 // ======================
 
 // localStorage 保存用に split 部分だけシリアライズ
-// layout にはタブの id ではなく uid を保存する
+/**
+ * layout にはタブの id ではなく uid を保存する。
+ * @param {Array<object>} tabs タブ情報配列。
+ * @param {string|null} currentTabId アクティブタブ ID。
+ * @returns {object} シリアライズ済み SplitView 状態。
+ */
 function serializeSplitStateForTabs(tabs, currentTabId) {
   const currentIndex = tabs.findIndex((t) => t.id === currentTabId);
 
@@ -778,7 +834,10 @@ function serializeSplitStateForTabs(tabs, currentTabId) {
   };
 }
 
-// loadTabsState 前に SplitView 状態を完全リセット
+/**
+ * loadTabsState 前に SplitView 状態を完全リセットする。
+ * @returns {void}
+ */
 function resetSplitStateBeforeLoad() {
   splitCanvasMode = false;
   splitEmpty = false;
@@ -787,7 +846,13 @@ function resetSplitStateBeforeLoad() {
 }
 
 // localStorage から復元した split オブジェクトを元に、SplitView 状態を復元
-// 戻り値: 起動時にアクティブにすべきタブID（SplitView復元できない場合は baseActiveId をそのまま返す）
+/**
+ * SplitView 状態を保存データから復元する。
+ * @param {object|null} splitState 保存済み SplitView 状態。
+ * @param {Array<object>} tabs タブ情報配列。
+ * @param {string} baseActiveId 復元失敗時に使用するタブ ID。
+ * @returns {string} 復元後にアクティブにすべきタブ ID。
+ */
 function restoreSplitStateFromStored(splitState, tabs, baseActiveId) {
   if (!splitState || typeof splitState !== "object") {
     // なにも復元できない → 通常の active に任せる
@@ -1282,7 +1347,10 @@ function handleSplitViewClick() {
   }
 }
 
-// このタブだけを SplitView から外す（残った側だけ SplitView に残す / 1つなら黒画面）
+/**
+ * 指定タブだけを SplitView から外す（残りは維持）。
+ * @param {string} tabId 対象タブ ID。
+ */
 function splitCancelForTab(tabId) {
   if (!splitCanvasMode) return;
   if (tabId == null) return;
@@ -1341,7 +1409,10 @@ function splitCancelForTab(tabId) {
 
 // 「SplitViewモードから抜けるけど、レイアウトは保存」
 // - 今映っているタブを splitLastTabId として覚える
-// - splitCanvasMode を false にする
+/**
+ * SplitView を終了し、現在のレイアウトを保持する。
+ * @returns {void}
+ */
 function exitSplitViewPreserveLayout() {
   if (!splitCanvasMode) return;
 
@@ -1355,7 +1426,10 @@ function exitSplitViewPreserveLayout() {
 }
 
 // タブを閉じたときの SplitView 状態更新
-// - SplitView 中で、かつ「中身タブ」を閉じたら空状態にする
+/**
+ * SplitView 中にタブを閉じたときの片側空状態を処理する。
+ * @param {string} closedTabId 閉じたタブ ID。
+ */
 function handleTabClosedForSplitView(closedTabId) {
   if (!splitCanvasMode) return;
   if (splitEmpty) return;

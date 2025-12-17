@@ -30,6 +30,12 @@
     },
   };
 
+  /**
+   * デフォルト設定と読み込んだ設定をマージするための浅めの再帰マージ。
+   * @param {Record<string, any>} target マージ先オブジェクト。
+   * @param {Record<string, any>} source マージ元オブジェクト。
+   * @returns {Record<string, any>} マージ済みオブジェクト。
+   */
   function deepMerge(target, source) {
     const result = Array.isArray(target) ? [...target] : { ...target };
     for (const key of Object.keys(source)) {
@@ -44,10 +50,20 @@
     return result;
   }
 
+  /**
+   * JSON ベースの簡易ディープコピー。
+   * @param {any} obj コピー対象。
+   * @returns {any} クローン結果。
+   */
   function structuredClone(obj) {
     return JSON.parse(JSON.stringify(obj));
   }
 
+  /**
+   * モデル履歴などの整合性を保つため設定値を正規化する。
+   * @param {Record<string, any>} settings 保存対象の設定。
+   * @returns {Record<string, any>} 正規化済み設定。
+   */
   function normalizeSettings(settings) {
     if (!settings.llm) settings.llm = {};
     const llm = settings.llm;
@@ -70,6 +86,10 @@
     return settings;
   }
 
+  /**
+   * localStorage から設定を読み込む（存在しない場合はデフォルトを返す）。
+   * @returns {Record<string, any>} 読み込んだ設定。
+   */
   function loadSettings() {
     try {
       const raw = window.localStorage.getItem(SETTINGS_KEY);
@@ -85,6 +105,10 @@
     }
   }
 
+  /**
+   * 設定を正規化して localStorage に保存する。
+   * @param {Record<string, any>} settings 保存する設定。
+   */
   function saveSettings(settings) {
     try {
       const normalized = normalizeSettings(structuredClone(settings));
@@ -95,6 +119,9 @@
     }
   }
 
+  /**
+   * 保存済み設定をリセットする。
+   */
   function resetSettings() {
     try {
       window.localStorage.removeItem(SETTINGS_KEY);

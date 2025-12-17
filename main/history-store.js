@@ -10,6 +10,10 @@ let saveTimer = null;
 const SAVE_DELAY_MS = 2000;   // 2秒まとめ書き
 const MAX_ENTRIES = 5000;     // 履歴上限（古いのから捨てる）
 
+/**
+ * renderer から共有される history.json を初期化する。
+ * userData 配下にパスを設定し、存在すれば即座に読み込む。
+ */
 function initHistory(app) {
   try {
     const userData = app.getPath("userData");
@@ -22,6 +26,10 @@ function initHistory(app) {
   }
 }
 
+/**
+ * history.json を同期的に読み込み、配列形式のみ受け入れる。
+ * 壊れている場合は空配列にフォールバックする。
+ */
 function loadHistorySync() {
   if (!historyPath) return;
   try {
@@ -42,6 +50,9 @@ function loadHistorySync() {
   }
 }
 
+/**
+ * メモリ上の履歴を遅延書き込みする。連続呼び出し時は直近のタイマーにまとめる。
+ */
 function scheduleSave() {
   if (!historyPath) return;
   if (saveTimer) clearTimeout(saveTimer);
@@ -57,6 +68,9 @@ function scheduleSave() {
   }, SAVE_DELAY_MS);
 }
 
+/**
+ * 新しい履歴エントリを追加する。直前と同じ URL の連投は抑制し、上限超過時は古いものを削除する。
+ */
 function addEntry(raw) {
   if (!raw || !raw.url) return;
 
@@ -85,6 +99,9 @@ function addEntry(raw) {
   scheduleSave();
 }
 
+/**
+ * 直近の履歴を新しい順に返す。デフォルト上限は 200 件。
+ */
 function getRecent(options = {}) {
   const limit = typeof options.limit === "number" ? options.limit : 200;
   if (!Array.isArray(history) || history.length === 0) return [];

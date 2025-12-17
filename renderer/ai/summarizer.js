@@ -2,6 +2,10 @@
 // Mindra Light - ページ要約機能（仮実装）
 // Webview の内容を取得 → 要約API（ローカルAI）へ送信 → 結果を返す
 
+/**
+ * 表示中ページの本文を抽出し、日本語で要約する。
+ * @returns {Promise<{ok: boolean, summary?: string, error?: string}>}
+ */
 async function summarizeActivePage() {
   try {
     const wv = document.querySelector("webview[style*='visibility: visible']");

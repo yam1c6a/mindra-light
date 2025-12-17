@@ -7,6 +7,11 @@
   // --------------------------------------------------
   // 汎用待機
   // --------------------------------------------------
+  /**
+   * 指定ミリ秒待機する。
+   * @param {number} ms 待機する時間。
+   * @returns {Promise<void>}
+   */
   function waitMs(ms) {
     return new Promise((res) => setTimeout(res, ms));
   }
@@ -14,6 +19,11 @@
   // --------------------------------------------------
   // アクティブな webview 内で JS を実行
   // --------------------------------------------------
+  /**
+   * アクティブな webview 上で任意のコードを実行する。
+   * @param {string} code 実行する JavaScript 文字列。
+   * @returns {Promise<any>} 実行結果またはエラーメッセージ。
+   */
   async function evalInActiveTab(code) {
     let wv = null;
 
@@ -52,6 +62,10 @@
   // =====================================================
   // 「新しいポストを表示」ボタンを上部で押して展開
   // =====================================================
+  /**
+   * X タイムライン上部の「新しいポストを表示」ボタンを展開する。
+   * @returns {Promise<{ok: boolean, clicked?: boolean, reason?: string, error?: string}>}
+   */
   async function expandNewPostsAtTop() {
     const code = `
       (async function () {
@@ -104,6 +118,10 @@
   // =====================================================
   // Xホーム / フォロー中 タブを準備＋新着ポスト展開
   // =====================================================
+  /**
+   * X ホーム/フォロー中タブが準備できるまで待ち、必要なら開く。
+   * @returns {Promise<{ok: boolean, mode?: string, error?: string}>}
+   */
   async function ensureXHomeTabActive() {
     if (window.splitCanvasMode) {
       return { ok: true, mode: "splitview" };
@@ -195,6 +213,11 @@
   // --------------------------------------------------
   // X 内で home → フォロー中 → 最初の tweet まで待つ
   // --------------------------------------------------
+  /**
+   * X ホーム/フォロー中の最初の投稿が表示されるまで待機する。
+   * @param {number} [timeoutMs=20000] タイムアウトまでの時間。
+   * @returns {Promise<{ok: boolean, error?: string}>}
+   */
   async function waitForXHomeFollowingReady(timeoutMs = 20000) {
     const code = `
       (async function () {
@@ -283,6 +306,11 @@
   // ==================================================
   // scroll 用スクリプト
   // ==================================================
+  /**
+   * X タイムラインを一定秒数スクロールするスクリプトを生成する。
+   * @param {number} seconds スクロールする秒数。
+   * @returns {string} webview で実行するスクリプト文字列。
+   */
   function buildXScrollScript(seconds) {
     const dur = Math.max(1, seconds | 0) * 1000;
 
@@ -326,6 +354,11 @@
 // ===============================================
 // X 用 朝の挨拶判定（LLM 呼び出し）
 // ===============================================
+/**
+ * 文章が朝の挨拶かを LLM で判定し、返信案を返す。
+ * @param {string} text 判定対象の文章。
+ * @returns {Promise<{ok: boolean, greeting?: boolean, reply?: string, error?: string}>}
+ */
 async function mindraCheckMorningGreetingWithLLM(text) {
   const content = (text || "").trim();
   if (!content) return "[false] 空のテキストなので判定できません。";
@@ -385,6 +418,10 @@ ${content}
   //   - webview 内に window.mindraXReadStep(options) を定義
   //   - 状態は window.__mindraXReadState に保持（継続可能）
   // =====================================================
+  /**
+   * X のタイムライン記事を読み上げるためのステップ実行スクリプトを生成する。
+   * @returns {string} webview で実行するスクリプト文字列。
+   */
   function buildXReadStepInstallScript() {
     return `
       (function () {
@@ -677,6 +714,12 @@ ${content}
   // - 投稿は人間が送信ボタンを押す
   // - 入力後、最大30秒 or __mindraXAbort まで待ってからタイムラインに戻る
   // ==================================================
+  /**
+   * 指定キーのツイートを開くスクリプトを生成する。
+   * @param {string} key ツイートを特定するキー。
+   * @param {string} text 音声読み上げ用の元テキスト。
+   * @returns {string} webview で実行するスクリプト文字列。
+   */
   function buildXOpenTweetByKeyScript(key, text) {
     const safeKey = String(key)
       .replace(/`/g, "\\`")

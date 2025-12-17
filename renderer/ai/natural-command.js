@@ -1,11 +1,20 @@
 // 自然文コマンド → 構造化コマンド（NLU層）
 
 (function () {
+  /**
+   * 空白除去と小文字化で検索用に標準化する。
+   * @param {string} text 変換対象テキスト。
+   * @returns {string} 正規化した文字列。
+   */
   function normalize(text) {
     return (text || "").replace(/\s+/g, "").toLowerCase();
   }
 
-  // 検索パターン用
+  /**
+   * 「検索して」などの末尾を除去して検索語を取り出す。
+   * @param {string} text 元の入力テキスト。
+   * @returns {string} 抽出した検索キーワード。
+   */
   function extractSearchLike(text) {
     if (!text) return "";
     let q = text;
@@ -14,7 +23,11 @@
     return q.trim();
   }
 
-  // 「◯◯って言って」系
+  /**
+   * 「〜って言って」系の定型句を外してメッセージ本体を得る。
+   * @param {string} text 元の入力テキスト。
+   * @returns {string} 送信メッセージ。
+   */
   function extractSayLike(text) {
     if (!text) return "";
     let msg = text;
@@ -22,6 +35,11 @@
     return msg.trim();
   }
 
+  /**
+   * 自然文を解析し、要約・翻訳・Web検索などのコマンド種別を返す。
+   * @param {string} raw 入力テキスト。
+   * @returns {{type: string, raw: string, text?: string, targetLang?: string}}
+   */
   function parse(raw) {
     const trimmed = (raw || "").toString().trim();
     if (!trimmed) return { type: "chat", raw: "" };
