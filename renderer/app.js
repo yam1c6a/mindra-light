@@ -1565,8 +1565,6 @@ function renderDownloadItems() {
           const res = await window.mindraDownloads.resume(item.id);
           if (!res || !res.ok) {
             console.error("resume download failed", res && res.error);
-          } else {
-            upsertDownloadItem({ ...item, state: "progressing" });
           }
         } catch (e) {
           console.error("resume download error", e);
