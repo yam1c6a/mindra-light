@@ -13,7 +13,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [windows-latest, macos-latest, ubuntu-latest]
+        os: [windows-2022, macos-latest, ubuntu-latest]
 
     runs-on: ${{ matrix.os }}
 
@@ -25,15 +25,21 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: "20"
+          cache: "npm"
 
       - name: Install dependencies
-        run: npm install
+        run: npm ci
+
+      - name: Clean electron-builder cache (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          Remove-Item -Recurse -Force "$env:LOCALAPPDATA\electron-builder\cache" -ErrorAction SilentlyContinue
+          Remove-Item -Recurse -Force "$env:LOCALAPPDATA\electron-builder" -ErrorAction SilentlyContinue
 
       - name: Build (Electron-builder)
-        run: |
-          npx electron-builder --publish never
+        run: npx electron-builder --publish never
 
-      # 成果物アップロード（Artifacts）
       - name: Upload Artifacts
         uses: actions/upload-artifact@v4
         with:
