@@ -1714,34 +1714,10 @@ if (window.mindraDownloadEvents && window.mindraDownloadStatus) {
   }
 }
 
-// ダウンロード完了状態でクリックしたらダウンロードフォルダを開く
+// クリックでダウンロード進捗パネルを表示する
 if (downloadStatusBtn) {
   downloadStatusBtn.addEventListener("click", async () => {
-    if (
-      downloadPanel &&
-      downloadPanel.style.display === "none" &&
-      downloadItems &&
-      downloadItems.length > 0
-    ) {
-      ensureDownloadPanelVisibility(true, { force: true });
-      return;
-    }
-
-    // 「完了」状態でなければ何もしない（ぐるぐる中や未使用時は無反応）
-    if (!downloadStatusBtn.classList.contains("is-complete")) {
-      return;
-    }
-
-    if (window.mindraDownloads && typeof window.mindraDownloads.openFolder === "function") {
-      try {
-        const res = await window.mindraDownloads.openFolder();
-        if (!res || !res.ok) {
-          console.error("open downloads folder failed", res && res.error);
-        }
-      } catch (e) {
-        console.error("open downloads folder error", e);
-      }
-    }
+    ensureDownloadPanelVisibility(true, { force: true });
   });
 }
 
