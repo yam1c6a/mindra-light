@@ -361,7 +361,26 @@
  */
 async function mindraCheckMorningGreetingWithLLM(text) {
   const content = (text || "").trim();
-  if (!content) return "[false] 空のテキストなので判定できません。";
+  if (!content) return "";
+
+
+  if (content.includes("おはよ")) {
+    return "おはよー！";
+  } else if (content.includes("おっはよ")) {
+    return "おはよー！";
+  } else if (/^おは../.test(content)) {
+    return "おはよー！";
+  } else if (content.includes("ぐっもーにん")) {
+    return "おはよー！";
+  }
+
+
+
+  return "";
+
+
+
+
 
   if (!window.mindraAI || typeof window.mindraAI.chat !== "function") {
     console.error("[x-commands] mindraAI.chat が見つからないよ");
@@ -495,8 +514,10 @@ ${content}
             // 1. 広告
             if (
               /\\bpromoted\\b/.test(combined) ||
+              /\\promotion\\b/.test(combined) ||
               /\\bsponsored\\b/.test(combined) ||
               /\\bad\\b/.test(combined) ||
+              /広告/.test(combined) ||
               /プロモーション/.test(combined)
             ) {
               return { kind: "ad", liked: !!liked };
@@ -842,8 +863,20 @@ ${content}
 
           // ★ ここでリプかどうか判定
           const isReply = isReplyDetailTweet(detailArticle);
+          let isrep = "";
           if (isReply) {
             // リプならいいねしないで終了
+            // タイムラインに戻る
+            await wait(2000);
+
+            try {
+              if (location.pathname.includes("/status/")) {
+                window.history.back();
+              }
+            } catch (e) {}
+
+            await wait(1500);
+            return { ok:true };
           }else{
             // いいねボタンがあれば押す（既にいいね済みは data-testid="unlike" などで判定してもOK）
             const alreadyLiked =
@@ -857,28 +890,16 @@ ${content}
                 detailArticle.querySelector('div[aria-label="いいね"]') ||
                 detailArticle.querySelector('div[aria-label="Like"]');
               if (likeBtn) {
+                isrep = "ok";
                 try { likeBtn.click(); } catch (e) {}
                 await wait(800);
               }
             }
           }
 
-          await wait(2000);
-
-          // タイムラインに戻る
-          try {
-            if (location.pathname.includes("/status/")) {
-              window.history.back();
-            }
-          } catch (e) {}
-          await wait(1500);
-
-          return { ok:true };
-
 
           // 軽く待ってから返信欄を探す
           await wait(5000);
-
 
           
           function findReplyBox() {
@@ -916,6 +937,18 @@ ${content}
           let input = findReplyBox();
           if (!input) {
             console.warn("[mindraX] reply input not found");
+
+            // タイムラインに戻る
+            await wait(2000);
+
+            try {
+              if (location.pathname.includes("/status/")) {
+                window.history.back();
+              }
+            } catch (e) {}
+
+            await wait(1500);
+            
             return { ok:false, reason:"no-input" };
           }
 
@@ -928,13 +961,15 @@ ${content}
             // できるだけ人間の入力に近い形で入れる
             try {
               // 全選択して insertText
-              const sel = window.getSelection();
-              const range = document.createRange();
-              range.selectNodeContents(input);
-              sel.removeAllRanges();
-              sel.addRange(range);
-              document.execCommand("selectAll", false, null);
-              document.execCommand("insertText", false, txt);
+              if(isrep.length > 0){
+                const sel = window.getSelection();
+                const range = document.createRange();
+                range.selectNodeContents(input);
+                sel.removeAllRanges();
+                sel.addRange(range);
+                document.execCommand("selectAll", false, null);
+                document.execCommand("insertText", false, txt);
+              }
             } catch (e) {
               // ダメなら innerText / textContent 直書き
               input.innerText = txt;
@@ -944,6 +979,16 @@ ${content}
             try {
               input.dispatchEvent(new InputEvent("input", { bubbles:true }));
             } catch (e) {}
+          }else{
+            // タイムラインに戻る
+            try {
+              if (location.pathname.includes("/status/")) {
+                window.history.back();
+              }
+            } catch (e) {}
+            await wait(1500);
+
+            return { ok:true };
           }
 
           await wait(3000);
@@ -1121,12 +1166,7 @@ ${content}
               const index = allTweets.length;
               const kind = typeLabel[t.type] || "通常";
               const likeLabel = t.liked ? "いいね済" : "未いいね";
-
-              // 判定しない
-              if (t.type === "ad" || t.type === "retweet" || t.type === "quote" || t.type === "space" || t.type === "reply" || t.liked) {
-                continue;
-              }
-
+/*
               if (typeof window.mindraAppendAiMessage === "function") {
                 window.mindraAppendAiMessage(
                   "assistant",
@@ -1137,19 +1177,29 @@ ${content}
                   ].join("\n")
                 );
               }
-
+*/
               // 描画させる（UIに一旦制御を返す）
               await waitMs(0);
 
               // LLM 判定（[true]/[false]/[error] + 理由）
               const judge = await mindraCheckMorningGreetingWithLLM(t.text);
 
-              //if (typeof window.mindraAppendAiMessage === "function") {
-              //  window.mindraAppendAiMessage(
-              //    "assistant",
-              //    `【LLM回答】\n${judge}`
-              //  );
-              //}
+              if (typeof window.mindraAppendAiMessage === "function") {
+                window.mindraAppendAiMessage(
+                  "assistant",
+                  [
+                  `【post ${index}/${maxTotal}】 ${kind} ${likeLabel}`,
+                  `${t.name} ${t.handle} ${t.datetime}`,
+                  `${t.text}`,
+                  `${judge}`,
+                  ].join("\n")
+                );
+              }
+
+              // 判定しない
+              if (t.type === "ad" || t.type === "retweet" || t.type === "quote" || t.type === "space" || t.type === "reply" || t.liked) {
+                continue;
+              }
 
               const norm = String(judge).toLowerCase();
               const hasFalse = norm.includes("false");

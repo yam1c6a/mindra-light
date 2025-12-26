@@ -66,6 +66,15 @@ contextBridge.exposeInMainWorld("mindraSettingsBridge", {
       });
     }
   },
+
+  openDefaultBrowserSettings: async () => {
+    try {
+      return await ipcRenderer.invoke("open-default-browser-settings");
+    } catch (e) {
+      console.error("[preload] openDefaultBrowserSettings error:", e);
+      return { ok: false, error: e && e.message ? e.message : String(e) };
+    }
+  },
 });
 
 /* ---------------- config ---------------- */
@@ -394,3 +403,4 @@ contextBridge.exposeInMainWorld("mindraDownloads", {
     }
   },
 });
+

@@ -1,6 +1,6 @@
 {
   "name": "mindra-light",
-  "version": "0.9.0",
+  "version": "0.9.1",
   "main": "main.js",
   "description": "Simple Electron webview browser for Mindra Light",
   "scripts": {
@@ -18,6 +18,9 @@
   },
   "build": {
     "appId": "com.mindra.light",
+    "nsis": {
+      "include": "build/installer.nsh"
+    },
     "files": [
       "**/*",
       {

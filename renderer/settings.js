@@ -104,6 +104,19 @@
                 障害が起きたときのログファイルが入っているフォルダを開くよ。
               </p>
             </div>
+
+            <!-- デフォルトブラウザ -->
+            <div class="settings-group">
+              <label class="settings-label">デフォルトブラウザ</label>
+              <div class="settings-row">
+                <button id="setting-open-default-browser" class="settings-button">
+                  既定のブラウザに設定する
+                </button>
+              </div>
+              <p class="settings-help">
+                OS の設定画面を開くよ。そこで Mindra Light を選んでね。
+              </p>
+            </div>            
           </section>
 
           <!-- LLM（Ollama 専用） -->
@@ -219,6 +232,9 @@
     const adblockChk = rootEl.querySelector("#setting-enable-adblock");
     const popupChk = rootEl.querySelector("#setting-enable-popups");
     const openLogsBtn = rootEl.querySelector("#setting-open-logs");
+    const openDefaultBrowserBtn = rootEl.querySelector(
+      "#setting-open-default-browser"
+    );
     const addProfileBtn = rootEl.querySelector(
       "#setting-add-profile-shortcut"
     );
@@ -303,6 +319,20 @@
         } catch (e) {
           console.error("[settings] openLogsBtn click error:", e);
           alert("ログフォルダを開く途中でエラーが出ちゃった…。");
+        }
+      });
+    }
+
+    // デフォルトブラウザ設定画面を開く
+    if (openDefaultBrowserBtn) {
+      openDefaultBrowserBtn.addEventListener("click", () => {
+        if (
+          window.mindraSettingsBridge &&
+          typeof window.mindraSettingsBridge.openDefaultBrowserSettings === "function"
+        ) {
+          window.mindraSettingsBridge.openDefaultBrowserSettings();
+        } else {
+          alert("ごめん…この環境では設定画面を開けないみたい。");
         }
       });
     }

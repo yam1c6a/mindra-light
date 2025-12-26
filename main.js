@@ -1361,6 +1361,50 @@ async function createWindow(profileIdArg) {
   });
 }
 // --------
+// デフォルトブラウザ設定画面を開く（Windows / macOS / Linux）
+ipcMain.handle("open-default-browser-settings", async () => {
+  const platform = process.platform;
+
+  if (platform === "win32") {
+    // Windows: 既定のアプリ設定
+    await shell.openExternal("ms-settings:defaultapps");
+    return;
+  }
+
+  if (platform === "darwin") {
+    // macOS: システム設定（デスクトップとDock / 既定ブラウザはここから辿れる）
+    try {
+      await execFileAsync("open", [
+        "x-apple.systempreferences:com.apple.Desktop-Settings.extension",
+      ]);
+    } catch (e) {
+      // 失敗しても落とさない
+      console.warn("[default-browser] mac open settings failed:", e);
+    }
+    return;
+  }
+
+  if (platform === "linux") {
+    // Linux: 環境依存が強いので「試す → ダメでも無視」でOK
+    try {
+      // まず自動設定を試す（存在しないDEもある）
+      await execFileAsync("xdg-settings", [
+        "set",
+        "default-web-browser",
+        "mindra-light.desktop",
+      ]);
+    } catch (e) {
+      console.warn("[default-browser] linux xdg-settings failed:", e);
+    }
+
+    try {
+      // GNOME の設定画面（GNOME以外では失敗してOK）
+      await execFileAsync("gnome-control-center", ["default-apps"]);
+    } catch (e) {
+      console.warn("[default-browser] linux gnome-control-center failed:", e);
+    }
+  }
+});
 
 // renderer からのログ受付
 ipcMain.on("mindra-log", (_event, payload) => {
@@ -1583,7 +1627,7 @@ ipcMain.handle("profile:create-shortcut", async () => {
 open -na "${appPath}" --args --mindra-profile=${profileId}
 `
 : `#!/bin/bash
-"/home/vboxuser/Downloads/mindra-light-ubuntu-latest(1)/mindra-light-0.9.0.AppImage" --no-sandbox --mindra-profile=${profileId} &
+"/home/vboxuser/Downloads/mindra-light-ubuntu-latest(1)/mindra-light-0.9.1.AppImage" --no-sandbox --mindra-profile=${profileId} &
 `;
 
       await fs.writeFile(shortcutPath, script, "utf8");
@@ -1766,6 +1810,13 @@ if (!gotLock) {
         await createWindow(p);
       }
     });
+
+    try {
+      app.setAsDefaultProtocolClient("http");
+      app.setAsDefaultProtocolClient("https");
+    } catch (e) {
+      console.warn("[default-browser] setAsDefaultProtocolClient failed", e);
+    }
 
     initAIBackend(ipcMain);
   });
