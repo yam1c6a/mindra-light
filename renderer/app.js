@@ -3213,9 +3213,15 @@ function setActiveTab(id) {
 
   currentTabId = id;
 
-  // SplitView に「すでに入っているタブ」のときだけ activeTabId を更新する
-  if (splitCanvasMode && layoutRoot) {
-    setActiveGroupForTab(id);
+  // SplitView中: アクティブにしたタブが分割レイアウトに入っていないと表示が切り替わらない
+  // → 必ずレイアウトに入れて、そのグループの activeTabId を更新する
+  if (splitCanvasMode) {
+    if (typeof ensureLayoutRootForTab === "function") {
+      ensureLayoutRootForTab(id);
+    }
+    if (layoutRoot && typeof setActiveGroupForTab === "function") {
+      setActiveGroupForTab(id);
+    }
   }
 
   applyCurrentLayout();
@@ -3247,10 +3253,32 @@ function createTab(url = "https://www.google.com", activate = true) {
 
   tabs.unshift(tab);
 
+  // SplitView中に新タブを作ったら、表示レイアウト側にも必ず入れる
+  if (splitCanvasMode) {
+    const baseId = currentTabId;
+    if (typeof addTabToGroupOfTab === "function" && baseId) {
+      const ok = addTabToGroupOfTab(tab.id, baseId);
+      if (!ok && typeof ensureLayoutRootForTab === "function") {
+        ensureLayoutRootForTab(tab.id);
+      }
+    } else if (typeof ensureLayoutRootForTab === "function") {
+      ensureLayoutRootForTab(tab.id);
+    }
+  }
+
   if (activate) {
     setActiveTab(id);
   } else {
     renderTabs();
+    saveTabsState();
+  }
+  if (activate) {
+    setActiveTab(tab.id);
+  } else {
+    if (splitCanvasMode) applyCurrentLayout();
+    else {
+      renderTabs();
+    }
     saveTabsState();
   }
 }
